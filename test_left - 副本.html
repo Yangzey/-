@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="css_1.css" />
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+    <script src="{% static 'js/course.js' %}"></script>
+</head>
+<body>
+    <!-- <div class="row"> -->
+    <div id="container" class="resizable">
+        <div id="left">
+            <div class="dropdown">
+                <div class="dropbtn">
+                    <form action=""> 
+                        <select name="problem"  onchange="showQuestion(this.value)">
+                            <option value="" >Select a question:</option>
+                            <option value="please">question_1</option>
+                            <option value="please">question_2</option>
+                        </select>   
+                        
+                    </form>
+                    <!-- <label for="head" class="dropdown-content">題目選擇</label>  -->
+                </div>
+            </div>
+          
+            <div class="dropdown">
+                <div class="dropbtn"><a href="massageBoard.html">留言板</a></div>
+            </div>
+            <div class="dropdown">
+                <div class="dropbtn"><a href="#">天梯</a></div>
+            </div>
+            <div id="txtHint">question info will be listed here...</div>
+        </div>
+        <div id="resizor" title="拖动我">
+
+        </div>
+        
+        <div id="right">
+            <div><h2>作答区域</h2></div>
+            <form action="" method="POST" name="form1" id="form1">
+                    <div class="dropdown">
+                            <div class="dropbtn">
+                            <select name="answerLanguage">
+                                <option value="" >Select a language:</option>
+                                <option value="C">C</option>
+                                <option value="C++">C++</option>
+                                <option value="Python">Python</option>
+                                <option value="Java">Java</option>
+                            </select>
+                            </div>
+                    </div>
+                <textarea name="answerText" rows="50" style="width:100%;height:400px;" ></textarea>
+                <br>
+	
+                <button type="button" onclick="answer_test_1()">测试</button>
+                <button type="button" onclick="answer_submit_1()">送出</button>
+            </form>
+            <div>
+                <div>结果</div>
+                <div id="demo">结果显示</div>
+            </div>
+            <form action="upload.php" method="post" enctype="multipart/form-data">
+                Select image to upload:
+                <input type="file" name="fileToUpload" id="fileToUpload" style="display:none">
+                <label for="fileToUpload">选择文件</label>  
+                <input type="submit" value="Upload Image" name="submit">
+                
+            </form>
+        </div>
+    </div>
+<script type="text/javascript">
+
+var isResizing = false;
+        var lastDownX = 0;
+
+        $(function () {
+            var container = $('#container.resizable');
+            // 根据当前窗口大小设定 container 的高度
+            container.css({'height': ($(window).height() - 20), 'opacity': 1});
+
+            var left = $('#left');
+            var right = $('#right');
+            var resizor = $('#resizor');
+
+            resizor.on('mousedown', function (e) {
+                isResizing = true;
+                lastDownX = e.clientX;
+            });
+
+            $(document).on('mousemove', function (e) {
+                if (!isResizing) return true;
+                var offsetRight = container.width() - (e.clientX - container.offset().left);
+                // 判断左右拖动范围
+                if (offsetRight < 0 || offsetRight >= container.width()) {
+                    isResizing = false;
+                    return true;
+                }
+                left.css('right', offsetRight);
+                resizor.css('right', offsetRight);
+                right.css('width', offsetRight);
+            }).on('mouseup', function (e) {
+                isResizing = false;
+            });
+        });
+
+function answer_submit_1(){
+  var xhttp;
+  xhttp=new XMLHttpRequest();
+  //document.getElementById("demo").innerHTML = "hh";
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("demo").innerHTML =this.responseText;// 
+    }
+  };
+  xhttp.open("GET", "answerSubmit.php", true);
+  xhttp.send();
+}
+
+function answer_test_1(){
+  var xhttp;
+  xhttp=new XMLHttpRequest();
+  //document.getElementById("demo").innerHTML = "hh";
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200 ) {
+      document.getElementById("demo").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "answerTest.php", true);
+  xhttp.send();
+}
+
+
+function showQuestion(str) {
+    var xhttp;
+    if (str == "") {
+      document.getElementById("txtHint").innerHTML = "yes";
+      return;
+    }
+    xhttp = new XMLHttpRequest()
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("txtHint").innerHTML = this.responseText;//this.responseText
+      }
+    };
+    xhttp.open("GET", "ProRead.php?value="+str, true);//getquestion.php
+    xhttp.send();
+  }
+//一般的題目提交方法
+
+
+</script>
+ 
+
+</body>
+</html>
